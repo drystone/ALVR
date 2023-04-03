@@ -17,9 +17,15 @@ pub enum PresetControl {
 impl PresetControl {
     pub fn new(schema: PresetSchemaNode) -> Self {
         match schema {
-            PresetSchemaNode::HigherOrderChoice(schema) => {
-                Self::HigherOrderChoice(higher_order_choice::Control::new(schema))
-            }
+            PresetSchemaNode::HigherOrderChoice {
+                options,
+                default_option_index,
+                gui,
+            } => Self::HigherOrderChoice(higher_order_choice::Control::new(
+                options,
+                default_option_index,
+                gui,
+            )),
             PresetSchemaNode::Mirror(_) => unimplemented!(),
         }
     }
@@ -37,4 +43,8 @@ impl PresetControl {
             Self::HigherOrderChoice(control) => control.ui(ui),
         }
     }
+}
+
+pub struct PresetEntry {
+    
 }

@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet};
 
-use super::schema::{HigherOrderChoiceSchema, PresetModifierOperation};
+use super::schema::{PresetModifierOperation, HigherOrderChoiceOption};
 use crate::dashboard::components::{NestingInfo, SettingControl};
 use alvr_sockets::{PathSegment, PathValuePair};
 use eframe::egui::Ui;
 use serde_json as json;
-use settings_schema::{SchemaEntry, SchemaNode};
+use settings_schema::{SchemaEntry, SchemaNode, ChoiceControlType};
 
 pub struct Control {
     name: String,
@@ -15,7 +15,11 @@ pub struct Control {
 }
 
 impl Control {
-    pub fn new(schema: HigherOrderChoiceSchema) -> Self {
+    pub fn new(
+        options: Vec<HigherOrderChoiceOption>,
+        default_option_index: usize,
+        gui: ChoiceControlType,
+    ) -> Self {
         let name = schema.name.clone();
 
         // Compile PresetModifiers to ValueChangeDescs

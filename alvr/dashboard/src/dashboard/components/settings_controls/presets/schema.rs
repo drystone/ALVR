@@ -23,19 +23,20 @@ pub struct HigherOrderChoiceOption {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct HigherOrderChoiceSchema {
-    pub name: String,
-    pub strings: HashMap<String, String>,
-    pub flags: HashSet<String>,
-    pub options: Vec<HigherOrderChoiceOption>,
-    pub default_option_index: usize,
-    pub gui: ChoiceControlType,
-}
-
-#[derive(Serialize, Deserialize)]
 pub enum PresetSchemaNode {
-    HigherOrderChoice(HigherOrderChoiceSchema),
+    HigherOrderChoice {
+        options: Vec<HigherOrderChoiceOption>,
+        default_option_index: usize,
+        gui: ChoiceControlType,
+    },
 
     // session-style path
     Mirror(String),
+}
+
+pub struct PresetSchema {
+    pub name: String,
+    pub strings: HashMap<String, String>,
+    pub flags: HashSet<String>,
+    pub control: PresetSchemaNode,
 }
