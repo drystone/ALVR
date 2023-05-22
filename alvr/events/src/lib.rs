@@ -26,6 +26,7 @@ pub struct Statistics {
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct GraphStatistics {
     pub total_pipeline_latency_s: f32,
+    pub tracking_queue_s: f32,
     pub game_time_s: f32,
     pub server_compositor_s: f32,
     pub encoder_s: f32,

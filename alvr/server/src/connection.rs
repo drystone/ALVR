@@ -879,6 +879,10 @@ async fn connection_pipeline(
                         network_latency,
                         decoder_latency,
                     );
+
+                    frame_interval_sender
+                        .send(stats.predicted_frame_interval_average())
+                        .ok();
                 }
             }
         }

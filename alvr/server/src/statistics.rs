@@ -11,6 +11,7 @@ const FULL_REPORT_INTERVAL: Duration = Duration::from_millis(500);
 pub struct HistoryFrame {
     target_timestamp: Duration,
     tracking_received: Instant,
+    tracking_submitted: Instant,
     frame_present: Instant,
     frame_composed: Instant,
     frame_encoded: Instant,
@@ -23,6 +24,7 @@ impl Default for HistoryFrame {
         Self {
             target_timestamp: Duration::ZERO,
             tracking_received: now,
+            tracking_submitted: now,
             frame_present: now,
             frame_composed: now,
             frame_encoded: now,
@@ -100,6 +102,16 @@ impl StatisticsManager {
         }
     }
 
+    pub fn report_tracking_submitted(&mut self, target_timestamp: Duration) {
+        if let Some(frame) = self
+            .history_buffer
+            .iter_mut()
+            .find(|frame| frame.target_timestamp == target_timestamp)
+        {
+            frame.tracking_submitted = Instant::now();
+        }
+    }
+
     pub fn report_frame_present(&mut self, target_timestamp: Duration, offset: Duration) {
         if let Some(frame) = self
             .history_buffer
@@ -155,12 +167,17 @@ impl StatisticsManager {
     // Called every frame. Some statistics are reported once every frame
     // Returns network latency
     pub fn report_statistics(&mut self, client_stats: ClientStatistics) -> Duration {
+        self.predicted_frame_interval_average
+            .submit_sample(client_stats.predicted_frame_interval);
+
         if let Some(frame) = self
             .history_buffer
             .iter_mut()
             .find(|frame| frame.target_timestamp == client_stats.target_timestamp)
         {
             frame.total_pipeline_latency = client_stats.total_pipeline_latency;
+
+            // let tracking_time
 
             let game_time_latency = frame
                 .frame_present
@@ -251,6 +268,7 @@ impl StatisticsManager {
             // timestamp as the graph time origin.
             alvr_events::send_event(EventType::GraphStatistics(GraphStatistics {
                 total_pipeline_latency_s: client_stats.total_pipeline_latency.as_secs_f32(),
+                tracking_queue_s:
                 game_time_s: game_time_latency.as_secs_f32(),
                 server_compositor_s: server_compositor_latency.as_secs_f32(),
                 encoder_s: encoder_latency.as_secs_f32(),
