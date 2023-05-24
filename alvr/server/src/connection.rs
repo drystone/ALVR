@@ -74,6 +74,10 @@ pub fn handshake_loop() -> IntResult {
                     }
                 }
             }
+            // automatically add localhost if we're running the ws_client adapter
+            if cfg!(feature = "ws_client") {
+                manual_client_ips.insert("localhost", hostname.clone());
+            }
             manual_client_ips
         };
 
